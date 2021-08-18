@@ -5,17 +5,18 @@ using TMPro;
 
 [ExecuteAlways]
 [RequireComponent(typeof(TextMeshPro))]
-public class CoordinateLabeler : MonoBehaviour{
+public class Coords : MonoBehaviour
+{
     [SerializeField] Color defaultColor = Color.white;
     [SerializeField] Color blockedColor = Color.gray;
     [SerializeField] Color exploredColor = Color.yellow;
     [SerializeField] Color pathColor = new Color(1f, .5f, 0f);
     TextMeshPro label;
     Vector2Int coordinates = new Vector2Int();
-    //GridManager gridManager;
+    GridManager gridManager;
 
     void Awake() {
-        //gridManager = FindObjectOfType<GridManager>();
+        gridManager = FindObjectOfType<GridManager>();
         label = GetComponent<TextMeshPro>();
         label.enabled = false;
         DisplayCoordinates();
@@ -29,7 +30,7 @@ public class CoordinateLabeler : MonoBehaviour{
             label.enabled = true;
         }
 
-        //SetLabelColor();
+        SetLabelColor();
         ToggleLables();
     }
 
@@ -40,7 +41,7 @@ public class CoordinateLabeler : MonoBehaviour{
             label.enabled = !label.IsActive();
         }
     }
-    /*void SetLabelColor()
+    void SetLabelColor()
     {
         if(gridManager==null){ return; }
         Node node = gridManager.GetNode(coordinates);
@@ -52,12 +53,12 @@ public class CoordinateLabeler : MonoBehaviour{
             label.color = pathColor;
         }
         else if(node.isExplored){
-            label.color = pathColor;
+            label.color = exploredColor;
         }
         else{
             label.color = defaultColor;
         }
-    }*/
+    }
     void DisplayCoordinates()
     {
         coordinates.x = Mathf.RoundToInt(transform.parent.position.x / UnityEditor.EditorSnapSettings.move.x);
