@@ -6,8 +6,8 @@ public class PathFinder : MonoBehaviour
 {
     [SerializeField] Vector2Int startCoordinates;
     public Vector2Int StartCoordinates { get { return startCoordinates; } }
-    [SerializeField] Vector2Int destinatationCoordinates;
-    public Vector2Int DestinatationCoordinates { get { return destinatationCoordinates; } }
+    [SerializeField] Vector2Int destinationCoordinates;
+    public Vector2Int DestinationCoordinates { get { return destinationCoordinates; } }
 
     Node startNode;
     Node destinationNode;
@@ -26,7 +26,7 @@ public class PathFinder : MonoBehaviour
         if(gridManager != null){
             grid = gridManager.Grid;
             startNode = grid[startCoordinates];
-            destinationNode = grid[destinatationCoordinates];
+            destinationNode = grid[destinationCoordinates];
         }
     }
     void Start()
@@ -80,14 +80,14 @@ public class PathFinder : MonoBehaviour
         bool isRunning = true;
 
         frontier.Enqueue(grid[coordinates]);
-        reached.Add(startCoordinates, grid[coordinates]);
+        reached.Add(coordinates, grid[coordinates]);
 
         while(frontier.Count > 0 && isRunning)
         {
             currentSearchNode=frontier.Dequeue();
             currentSearchNode.isExplored = true;
             ExploreNeighbours();
-            if(currentSearchNode.coordinates == destinatationCoordinates)
+            if(currentSearchNode.coordinates == destinationCoordinates)
             {
                 isRunning = false;
             }
@@ -98,7 +98,6 @@ public class PathFinder : MonoBehaviour
     {
         List<Node> path = new List<Node>();
         Node currentNode = destinationNode;
-
         path.Add(currentNode);
         currentNode.isPath = true;
 
@@ -120,7 +119,6 @@ public class PathFinder : MonoBehaviour
 
             grid[coordinates].isWalkable = false;
             List<Node> newPath = GetNewPath();
-
             grid[coordinates].isWalkable = previousState;
 
             if(newPath.Count<=1)
