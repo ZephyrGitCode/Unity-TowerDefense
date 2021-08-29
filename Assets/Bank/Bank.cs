@@ -9,11 +9,13 @@ public class Bank : MonoBehaviour
 
     [SerializeField] int startingBalance = 150;
     [SerializeField] int currentBalance;
+    MenuLogic menuLogic;
     public int CurrentBalance { get { return currentBalance; } }
 
     [SerializeField] TextMeshProUGUI displayBalance;
     
     private void Awake() {
+        menuLogic = FindObjectOfType<MenuLogic>();
         currentBalance = startingBalance;
         UpdateDisplay();
     }
@@ -30,18 +32,21 @@ public class Bank : MonoBehaviour
         UpdateDisplay();
         if(currentBalance < 0)
         {
-            ReloadScene();
+            // If less than 1 gold, end game
+            EndGame();
         }
     }
 
-    void UpdateDisplay()
+    public void UpdateDisplay()
     {
         displayBalance.text = "Gold: " + currentBalance;
     }
 
-    void ReloadScene()
+    public void EndGame()
     {
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.buildIndex);
+        //Scene currentScene = SceneManager.GetActiveScene();
+        //SceneManager.LoadScene("MainMenu");
+        // Call menulogic to load end game ui, return to main menu
+        menuLogic.LoseUI();
     }
 }

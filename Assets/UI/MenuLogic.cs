@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class MenuLogic : MonoBehaviour
 {
     [SerializeField] Canvas menuCanvas;
     [SerializeField] Canvas helpCanvas;
+    [SerializeField] TextMeshProUGUI endText;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    GameTimer gameTimer;
+
+    void Awake() {
+        gameTimer = FindObjectOfType<GameTimer>();
     }
-
     public void gameHelp()
     {
         // disable menu UI, enable second UI over the game
@@ -36,9 +37,17 @@ public class MenuLogic : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
-        public void LoadMenu()
+    public void LoadMenu()
     {
         // Load Game Scene
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void LoseUI()
+    {
+        // Launch ending UI, btn to menu screen
+        gameTimer.LoseGame();
+        endText.gameObject.SetActive(true);
+        endText.text = "Finish\nFinal Time: "+gameTimer.Val;
     }
 }
