@@ -26,7 +26,7 @@ public class GridManager : MonoBehaviour
 
     public void BlockNode(Vector2Int coordinates)
     {
-        if(Grid.ContainsKey(coordinates))
+        if(grid.ContainsKey(coordinates))
         {
             grid[coordinates].isWalkable=false;
         }
@@ -54,15 +54,17 @@ public class GridManager : MonoBehaviour
     public Vector3 GetPositionFromCoordinates(Vector2Int coordinates)
     {
         Vector3 position = new Vector3();
-        position.x = Mathf.RoundToInt(coordinates.x * unityGridSize);
-        position.z = Mathf.RoundToInt(coordinates.y * unityGridSize);
+        position.x = coordinates.x * unityGridSize;
+        position.z = coordinates.y * unityGridSize;
         return position;
     }
 
     void CreateGrid()
     {
-        for(int x = 0; x < gridSize.x; x++){
-            for(int y = 0; y < gridSize.y; y++){
+        for(int x = 0; x < gridSize.x; x++)
+        {
+            for(int y = 0; y < gridSize.y; y++)
+            {
                 // generate grid into dictionary
                 Vector2Int coordinates = new Vector2Int(x,y);
                 grid.Add(coordinates, new Node(coordinates, true));

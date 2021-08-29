@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Enemy))]
 public class EnemyMover : MonoBehaviour
 {
-    [SerializeField] [Range(0f,5f)] float speed = 1f;
+    [SerializeField] [Range(0f, 5f)] float speed = 1f;
     List<Node> path = new List<Node>();
     Enemy enemy;
     GridManager gridManager;
@@ -21,7 +21,6 @@ public class EnemyMover : MonoBehaviour
     {
         ReturnToStart();
         RecalculatePath(true);
-        StartCoroutine(FollowPath());
     }
 
     void RecalculatePath(bool resetPath)
@@ -40,7 +39,7 @@ public class EnemyMover : MonoBehaviour
         StopAllCoroutines();
         path.Clear();
         path = pathFinder.GetNewPath(coordinates);
-        //StartCoroutine(FollowPath());
+        StartCoroutine(FollowPath());
     }
 
     void ReturnToStart()
@@ -50,8 +49,8 @@ public class EnemyMover : MonoBehaviour
     }
 
     void FinishPath(){
-        gameObject.SetActive(false);
         enemy.StealGold();
+        gameObject.SetActive(false);
     }
 
     IEnumerator FollowPath()

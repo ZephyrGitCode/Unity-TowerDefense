@@ -33,7 +33,6 @@ public class Tower : MonoBehaviour
         // Disable all children
         // Enable all children sequentially
         // based on buildTime variable
-        gameObject.SetActive(false);
 
         foreach(Transform child in transform)
         {
