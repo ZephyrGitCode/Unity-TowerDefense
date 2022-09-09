@@ -6,27 +6,10 @@ public class Tower : MonoBehaviour
 {
 
     [SerializeField] float buildTime = 1f;
-    [SerializeField] int cost = 75;
-    public GameObject thisPrefab;
+    [SerializeField] public int cost = 10;
 
     private void Start() {
         StartCoroutine(Build());
-    }
-
-    public bool CreateTower(Tower tower, Vector3 position)
-    {
-        Bank bank = FindObjectOfType<Bank>();
-        if(bank == null){
-            return false;
-        }
-
-        if(bank.CurrentBalance >= cost){
-            Instantiate(tower, position, Quaternion.identity);
-            bank.Withdraw(cost);
-            return true;
-        }
-
-        return false;
     }
 
     IEnumerator Build()

@@ -19,7 +19,9 @@ public class PlayerSelector : MonoBehaviour
     [Tooltip("Navigation Input Vector2 for menu navigation.")]
     private Vector2 navigateInput = Vector2.zero;
     [Tooltip("Bool that is set true when OnSelect is called.")]
-    private bool selectTrig = false;
+    private bool onSelectBool = false;
+    [Tooltip("Bool that is set true when OnBuy is called.")]
+    private bool onBuyBool = false;
 
     /// <summary>
     /// UI Canvas objects
@@ -47,9 +49,13 @@ public class PlayerSelector : MonoBehaviour
     private GameObject savedDeploy;
 
     /// <summary>
-    /// Private variable to hold the next player's spawner
+    /// Private variable to hold Lane Manager and given lane
     /// </summary>
-    private EnemySpawner enemySpawner;
+    private LaneManager laneManager;
+    private Lane myLane;
+
+    [Tooltip("My bank")]
+    public Bank myBank;
 
     /// <summary>
     /// Map Tile (Node) related variables
@@ -64,11 +70,16 @@ public class PlayerSelector : MonoBehaviour
     private Vector2Int coordinates;
 
     private void Awake() {
-        gridManager = FindObjectOfType<GridManager>();
-        pathFinder = FindObjectOfType<PathFinder>();
+        laneManager = FindObjectOfType<LaneManager>();
     }
 
     private void Start() {
+        // Returns a lane from the manager
+        myLane = laneManager.AssignLane(this);
+
+        gridManager = myLane.transform.GetComponent<GridManager>();
+        pathFinder = myLane.transform.GetComponent<PathFinder>();
+
         controller = gameObject.GetComponent<CharacterController>();
         coordinates = gridManager.GetCoordinatesFromPosition(transform.position);
 
@@ -111,6 +122,23 @@ public class PlayerSelector : MonoBehaviour
                 savedDefence = cycleSelect(savedDefence, false);
             }
         }
+
+        if (menuOpen == deployCanvas)
+        {
+             // Navigate right
+            if (navigateInput.x > .5)
+            {
+                // Cycle right sibling if possible, otherwise cycle around
+                savedDeploy = cycleSelect(savedDeploy, true);
+            }
+
+            // Navigate left
+            if (navigateInput.x < -.5)
+            {
+                // Cycle left sibling if possible, otherwise cycle around
+                savedDeploy = cycleSelect(savedDeploy, false);
+            }
+        }
     }
 
     /// <summary>
@@ -119,7 +147,7 @@ public class PlayerSelector : MonoBehaviour
     /// <param name="context"></param>
     public void OnBuy(InputAction.CallbackContext context)
     {
-        selectTrig = context.action.triggered;
+        onBuyBool = context.action.triggered;
 
         if (menuOpen)
         {
@@ -128,14 +156,31 @@ public class PlayerSelector : MonoBehaviour
                 // Purchase defence
                 BuyDefence(savedDefence.GetComponent<Tower>());
                 savedDefence.SetActive(false);
+                CloseAllCanvas();
             }
-
+            
+            /// <summary>
+            /// Deploy Unit to Enemy Spawn. Buy unit.
+            /// </summary>
             if (menuOpen == deployCanvas)
             {
-                //TODO Deploy unit against enemy spawn box.
-                // enemySpawner.DeployUnit(savedDeploy.GetComponent<Enemy>());
-                //savedDeploy.SetActive(false);
+                if (myBank == null)
+                {
+                    return;
+                }
+
+                // Withdraw from the bank and spawn the unit
+                if (myBank.BuyUnit(savedDeploy.GetComponent<Enemy>()) == true)
+                {
+                    Lane otherLane = GetOtherLane();
+                    otherLane.enemySpawner.DeployUnit(savedDeploy.gameObject, otherLane);
+                    savedDeploy.SetActive(false);
+                    CloseAllCanvas();
+                }
+                // TODO
+                //SpawnMessage("Not enough money to deploy unit");
             }
+
             // A menu is already open
             return;
         }
@@ -147,15 +192,10 @@ public class PlayerSelector : MonoBehaviour
     /// <param name="context"></param>
     public void OnSelect(InputAction.CallbackContext context)
     {
-        selectTrig = context.action.triggered;
+        onSelectBool = context.action.triggered;
 
         if (menuOpen)
         {
-            if (menuOpen == buyCanvas)
-            {
-                //TODO make it not purchase tower immedietly, does this happen on controller = yes?
-                //BuyDefence(savedDefence.GetComponent<Tower>());
-            }
             // A menu is already open
             return;
         }
@@ -193,6 +233,7 @@ public class PlayerSelector : MonoBehaviour
     {
         // Open Deploy Menu
         DisplayCanvas(deployCanvas);
+        savedDeploy.SetActive(true);
     }
 
     /// <summary>
@@ -259,7 +300,7 @@ public class PlayerSelector : MonoBehaviour
     /// <returns></returns>
     private GameObject cycleSelect(GameObject givenObject, bool isNext)
     {
-        // Deactive current object
+        // De-active current object
         givenObject.SetActive(false);
 
         // Get index of current object
@@ -310,13 +351,17 @@ public class PlayerSelector : MonoBehaviour
         /// - place turret and set space to not walkable
         /// - Close all Canvas
         /// </summary>
+
+        if(myBank == null){
+            return;
+        }
         
-        bool isSuccessful = towerPrefab.CreateTower(towerPrefab, gridManager.GetPositionFromCoordinates(selectedNode.coordinates));
+        bool isSuccessful = myBank.CreateTower(towerPrefab, gridManager.GetPositionFromCoordinates(selectedNode.coordinates));
         if(isSuccessful == true)
         {
+            Instantiate(towerPrefab, gridManager.GetPositionFromCoordinates(selectedNode.coordinates), Quaternion.identity);
             gridManager.BlockNode(coordinates);
             pathFinder.NotifiyReceivers();
-            CloseAllCanvas();
         }
         else
         {
@@ -325,4 +370,16 @@ public class PlayerSelector : MonoBehaviour
         }
     }
     #endregion
+
+    /// <summary>
+    /// Return other lane. Called by DeployUnit.
+    /// </summary>
+    public Lane GetOtherLane()
+    {
+        foreach(Lane i_lane in laneManager.myLanes)
+        {
+            if (i_lane != myLane) return i_lane;
+        }
+        return myLane;
+    }
 }

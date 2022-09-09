@@ -17,12 +17,14 @@ public class PathFinder : MonoBehaviour
     Dictionary<Vector2Int, Node> reached = new Dictionary<Vector2Int, Node>();
 
     Vector2Int[] directions = { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
+    
+    [Tooltip("Assigned Grid Manager for this lane")]
     GridManager gridManager;
     Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
     
     private void Awake() {
         // On awake, load gridmanger and get start/end coords from game object
-        gridManager = FindObjectOfType<GridManager>();
+        gridManager = transform.GetComponent<GridManager>();
         if(gridManager != null){
             grid = gridManager.Grid;
             startNode = grid[startCoordinates];

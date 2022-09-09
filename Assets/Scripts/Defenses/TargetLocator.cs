@@ -9,6 +9,11 @@ public class TargetLocator : MonoBehaviour
     [SerializeField] float range = 20f;
     Transform target;
 
+    Animator m_Animator;
+
+    private void Start() {
+        m_Animator = GetComponent<Animator>();
+    }
     
     void Update()
     {
@@ -60,6 +65,11 @@ public class TargetLocator : MonoBehaviour
 
     void Attack(bool isActive)
     {
+        // For towers with animators
+        if(m_Animator != null)
+        {
+            m_Animator.SetBool("isShooting", true);
+        }
         var emissionModule = projectileParticles.emission;
         emissionModule.enabled = isActive;
     }

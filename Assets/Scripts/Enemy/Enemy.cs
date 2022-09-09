@@ -5,25 +5,33 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
-    [SerializeField] int goldReward =25;
-    [SerializeField] int goldPenalty = 25;
+    [SerializeField] int goldReward = 25;
+    [SerializeField] public int goldCost = 5;
+    [SerializeField] int lifeDamage = 1;
+    [SerializeField] int incomeAdd = 1;
 
-    Bank bank;
-
-    void Start()
-    {
-        bank = FindObjectOfType<Bank>();
-    }
+    public Bank myBank;
 
     public void RewardGold()
     {
-        if(bank == null) { return; }
-        bank.Deposit(goldReward);
+        if(myBank == null) { return; }
+        myBank.Deposit(goldReward);
     }
 
-    public void StealGold()
+    public void TakeLife()
     {
-        if(bank == null) { return; }
-        bank.Withdraw(goldPenalty);
+        // TODO Take player's life
+        //if(player == null) { return; }
+        // Take health
+        if (true) // Player health > 0
+        {
+            // take life
+            Debug.Log("player life: ");
+        }else
+        {
+            Debug.Log("Died");
+        }
+        // Spawn unit at the start of lane again
+        //player.take(lifeDamage);
     }
 }

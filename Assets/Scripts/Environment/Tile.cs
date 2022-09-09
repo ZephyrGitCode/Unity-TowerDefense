@@ -4,20 +4,17 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    [SerializeField] Tower towerPrefab;
+    [Tooltip("Flag for tower is placeable on tile")]
     [SerializeField] bool isPlaceable;
     public bool IsPlaceable { get { return isPlaceable; } }
 
-    GridManager gridManager;
-
-    PathFinder pathFinder;
+    public GridManager gridManager;
 
     Vector2Int coordinates = new Vector2Int();
 
     private void Awake() {
         // TODO Make Grid manager lane specific
-        gridManager = FindObjectOfType<GridManager>();
-        pathFinder = FindObjectOfType<PathFinder>();
+        //gridManager = FindObjectOfType<GridManager>();
     }
 
     private void Start() {

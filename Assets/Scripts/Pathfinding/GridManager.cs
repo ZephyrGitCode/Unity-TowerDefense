@@ -9,9 +9,6 @@ public class GridManager : MonoBehaviour
     [SerializeField] Transform bottomLeftTile;
     [Tooltip("Calculate Lane gridSize using top right lane tile")]
     [SerializeField] Transform topRightTile;
-    
-
-    [SerializeField] Vector2Int gridSize;
 
     [Tooltip("World grid size should match unity editor snap settings")]
     [SerializeField] int unityGridSize = 10;

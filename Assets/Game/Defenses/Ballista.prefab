@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildTime: 1
-  cost: 75
+  cost: 10
   thisPrefab: {fileID: 3219458064393657486}
 --- !u!1 &6131056645070147807
 GameObject:
