@@ -16,7 +16,8 @@ public class EnemySpawner : MonoBehaviour
         GameObject newUnit = GameObject.Instantiate(unit, GetSpawnPosition(), Quaternion.identity);
         //newUnit.GetComponent<Enemy>().myLane = this.transform;
         Enemy enemy = newUnit.transform.GetComponent<Enemy>();
-        Debug.Log("Enemy: "+enemy);
+        // Enable enemy to be shot
+        enemy.canBeShot = true;
         enemy.myBank = lane.myPlayer.myBank;
         UnitMover unitMover = newUnit.transform.GetComponent<UnitMover>();
         unitMover.SetDestination(lane.finishLine);

@@ -4,20 +4,30 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
+    [SerializeField, Tooltip("Time in seconds to build the defence unit.")]
+    float buildTime = 1f;
 
-    [SerializeField] float buildTime = 1f;
-    [SerializeField] public int cost = 10;
+    [SerializeField, Tooltip("This tower's name.")]
+    public string myName = "Name";
 
-    private void Start() {
+    [SerializeField, Tooltip("This tower's Type.")]
+    public string myType = "Ranged Single Target";
+
+    [SerializeField, Tooltip("Cost to build the tower.")]
+    public int myCost = 10;
+
+    [Tooltip("My Prefab, used by BuyDefence.")]
+    public GameObject myPrefab;
+
+    public void Activate() {
         StartCoroutine(Build());
     }
 
+    /// <summary>
+    /// Disable all children, enable all children sequentially, buildTime determines this.
+    /// </summary>
     IEnumerator Build()
     {
-        // Disable all children
-        // Enable all children sequentially
-        // based on buildTime variable
-
         foreach(Transform child in transform)
         {
             child.gameObject.SetActive(false);

@@ -11,8 +11,12 @@ public class TargetLocator : MonoBehaviour
 
     Animator m_Animator;
 
+    private AudioSource audioSource;
+    public AudioClip shootingNoise;
+
     private void Start() {
         m_Animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
     
     void Update()
@@ -34,6 +38,11 @@ public class TargetLocator : MonoBehaviour
 
         foreach(Enemy enemy in enemies)
         {
+            // Ignore enemy if it is still being purchased
+            if(!enemy.canBeShot)
+            {
+                return;
+            }
             float targetDistance = Vector3.Distance(transform.position, enemy.transform.position);
             if(targetDistance < maxDistance)
             {
@@ -65,12 +74,21 @@ public class TargetLocator : MonoBehaviour
 
     void Attack(bool isActive)
     {
-        // For towers with animators
-        if(m_Animator != null)
-        {
-            m_Animator.SetBool("isShooting", true);
-        }
         var emissionModule = projectileParticles.emission;
         emissionModule.enabled = isActive;
+        if (isActive)
+        {
+            // For towers with animators
+            if(m_Animator != null)
+            {
+                m_Animator.SetBool("isShooting", true);
+            }
+
+            // Play audio once
+            if (!audioSource.isPlaying)
+            {
+                audioSource.PlayOneShot(shootingNoise);
+            }
+        }
     }
 }

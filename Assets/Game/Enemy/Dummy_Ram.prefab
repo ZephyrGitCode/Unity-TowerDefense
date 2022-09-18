@@ -91,12 +91,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5672325927823913723}
   - component: {fileID: 5727953556947268318}
-  - component: {fileID: 6513716316066617962}
-  - component: {fileID: 5149968039641254737}
-  - component: {fileID: 1464473789529537054}
-  - component: {fileID: 6083885764147704057}
+  - component: {fileID: 2797892401184103708}
   m_Layer: 0
-  m_Name: Ram
+  m_Name: Dummy_Ram
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -131,7 +128,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 4, y: 4, z: 4}
   m_Center: {x: 0, y: 2.5, z: 0}
---- !u!114 &6513716316066617962
+--- !u!114 &2797892401184103708
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,67 +137,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5040643765344069697}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9bbbf1be6bbaa64782af294ffaf50b8, type: 3}
+  m_Script: {fileID: 11500000, guid: bc07d5809b6d81b4ca63cf9c0aad876a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goal: {fileID: 0}
---- !u!114 &5149968039641254737
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5040643765344069697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0664e9380b3cb740a96ca19c440f6cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHitPoints: 3
-  currentHitPoints: 0
---- !u!114 &1464473789529537054
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5040643765344069697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a70c4b23acf9c0f4ea54090196b073f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myName: Hot Roller
-  myType: Slow, low health
-  myCost: 5
-  goldReward: 5
-  lifeDamage: 1
-  incomeAdd: 1
-  myBank: {fileID: 0}
-  myPrefab: {fileID: 5040643765344069697}
-  canBeShot: 0
---- !u!195 &6083885764147704057
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5040643765344069697}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 3
-  m_Speed: 8
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 5
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  realPrefab: {fileID: 5040643765344069697, guid: b940df629b09f434dbb9fd487257db6c, type: 3}
 --- !u!1 &8852012365033576436
 GameObject:
   m_ObjectHideFlags: 0

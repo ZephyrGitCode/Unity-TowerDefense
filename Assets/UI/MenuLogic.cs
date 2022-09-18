@@ -22,7 +22,8 @@ public class MenuLogic : MonoBehaviour
 
         helpCanvas.gameObject.SetActive(true);
     }
-
+    
+    
     public void MainMenu()
     {
         // disable menu UI, enable second UI over the game

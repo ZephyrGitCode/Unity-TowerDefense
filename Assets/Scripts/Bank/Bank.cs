@@ -12,6 +12,8 @@ public class Bank : MonoBehaviour
     MenuLogic menuLogic;
     public int CurrentBalance { get { return currentBalance; } }
 
+    public int currentIncome = 60;
+
     [SerializeField] TextMeshProUGUI displayBalance;
     
     private void Awake() {
@@ -54,12 +56,12 @@ public class Bank : MonoBehaviour
     }
 
     /// <summary>
-    /// Attempt to withdraw the cost of the unit. Called by PlayerSelector.DeployUnit.
+    /// Attempt to withdraw the cost of the defence. Called by PlayerSelector.BuyDefence.
     /// </summary>
-    public bool BuyUnit(Enemy enemy)
+    public bool CreateTower(Tower tower, Vector3 position)
     {
-        if(currentBalance >= enemy.goldCost){
-            Withdraw(enemy.goldCost);
+        if(currentBalance >= tower.myCost){
+            Withdraw(tower.myCost);
             return true;
         }
 
@@ -67,15 +69,23 @@ public class Bank : MonoBehaviour
     }
 
     /// <summary>
-    /// Attempt to withdraw the cost of the defence. Called by EnemySpawner.DeployUnit.
+    /// Attempt to withdraw the cost of the unit. Called by PlayerSelector.DeployUnit.
     /// </summary>
-    public bool CreateTower(Tower tower, Vector3 position)
+    public bool CreateUnit(Enemy enemy)
     {
-        if(currentBalance >= tower.cost){
-            Withdraw(tower.cost);
+        if(currentBalance >= enemy.myCost){
+            Withdraw(enemy.myCost);
             return true;
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Attempt to give income to player. Called by IncomeManager.
+    /// </summary>
+    public void GiveIncome()
+    {
+        Deposit(currentIncome);
     }
 }

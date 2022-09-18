@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerSelector : MonoBehaviour
@@ -23,14 +24,21 @@ public class PlayerSelector : MonoBehaviour
     [Tooltip("Bool that is set true when OnBuy is called.")]
     private bool onBuyBool = false;
 
+    public GameObject buyEffect;
+    public GameObject deployEffect;
+
     /// <summary>
-    /// UI Canvas objects
+    /// UI objects
     /// </summary>
     [SerializeField]
-    [Tooltip("Buy canvas gameobject")]
-    public GameObject buyCanvas;
-    public GameObject upgradeCanvas;
-    public GameObject deployCanvas;
+    [Tooltip("Buy UI Root")]
+    public GameObject buyUI;
+    public GameObject upgradeUI;
+    public GameObject deployUI;
+
+    private TextMeshProUGUI nameText;
+    private TextMeshProUGUI typeText;
+    private TextMeshProUGUI costText;
 
     /// <summary>
     /// Private variable to hold the current open menu
@@ -69,13 +77,18 @@ public class PlayerSelector : MonoBehaviour
     [Tooltip("Vextor2Int Coordinates")]
     private Vector2Int coordinates;
 
+    [Tooltip("Income Manager")]
+    private IncomeManager incomeManager;
+
     private void Awake() {
         laneManager = FindObjectOfType<LaneManager>();
+        incomeManager = FindObjectOfType<IncomeManager>();
     }
 
     private void Start() {
         // Returns a lane from the manager
         myLane = laneManager.AssignLane(this);
+        transform.position = myLane.transform.position;
 
         gridManager = myLane.transform.GetComponent<GridManager>();
         pathFinder = myLane.transform.GetComponent<PathFinder>();
@@ -85,6 +98,8 @@ public class PlayerSelector : MonoBehaviour
 
         savedDefence = buyHolder.transform.GetChild(0).gameObject;
         savedDeploy = deployHolder.transform.GetChild(0).gameObject;
+
+        incomeManager.AddBank(myBank);
     }
 
     /// <summary>
@@ -106,7 +121,7 @@ public class PlayerSelector : MonoBehaviour
         // Updates the navigate input between -1 and 1
         navigateInput = context.ReadValue<Vector2>();
 
-        if (menuOpen == buyCanvas)
+        if (menuOpen == buyUI)
         {
              // Navigate right
             if (navigateInput.x > .5)
@@ -121,9 +136,13 @@ public class PlayerSelector : MonoBehaviour
                 // Cycle left sibling if possible, otherwise cycle around
                 savedDefence = cycleSelect(savedDefence, false);
             }
+
+            // Set the UI to tower text
+            SetUITextsTower(savedDefence.GetComponent<Tower>());
+            return;
         }
 
-        if (menuOpen == deployCanvas)
+        if (menuOpen == deployUI)
         {
              // Navigate right
             if (navigateInput.x > .5)
@@ -138,6 +157,11 @@ public class PlayerSelector : MonoBehaviour
                 // Cycle left sibling if possible, otherwise cycle around
                 savedDeploy = cycleSelect(savedDeploy, false);
             }
+
+            // Set the UI to Unit text
+            Enemy realPrefab = savedDeploy.GetComponent<DummySpawner>().realPrefab.GetComponent<Enemy>();
+            SetUITextsUnit(realPrefab);
+            return;
         }
     }
 
@@ -151,7 +175,7 @@ public class PlayerSelector : MonoBehaviour
 
         if (menuOpen)
         {
-            if (menuOpen == buyCanvas)
+            if (menuOpen == buyUI)
             {
                 // Purchase defence
                 BuyDefence(savedDefence.GetComponent<Tower>());
@@ -162,21 +186,12 @@ public class PlayerSelector : MonoBehaviour
             /// <summary>
             /// Deploy Unit to Enemy Spawn. Buy unit.
             /// </summary>
-            if (menuOpen == deployCanvas)
+            if (menuOpen == deployUI)
             {
-                if (myBank == null)
-                {
-                    return;
-                }
-
                 // Withdraw from the bank and spawn the unit
-                if (myBank.BuyUnit(savedDeploy.GetComponent<Enemy>()) == true)
-                {
-                    Lane otherLane = GetOtherLane();
-                    otherLane.enemySpawner.DeployUnit(savedDeploy.gameObject, otherLane);
-                    savedDeploy.SetActive(false);
-                    CloseAllCanvas();
-                }
+                //BuyUnit(savedDeploy.GetComponent<Enemy>());
+                BuyUnit(savedDeploy);
+
                 // TODO
                 //SpawnMessage("Not enough money to deploy unit");
             }
@@ -207,7 +222,8 @@ public class PlayerSelector : MonoBehaviour
         if(selectedNode.isWalkable && !pathFinder.WillBlockPath(coordinates)) {
             // Snap the position of the user to the selected Node
             transform.position = gridManager.GetPositionFromCoordinates(selectedNode.coordinates);
-            DisplayCanvas(buyCanvas);
+            DisplayCanvas(buyUI);
+            SetUITextsTower(savedDefence.GetComponent<Tower>());
             savedDefence.SetActive(true);
         }
 
@@ -215,8 +231,11 @@ public class PlayerSelector : MonoBehaviour
         if(selectedNode.isWalkable == false) {
             // Snap the position of the user to the selected Node
             transform.position = gridManager.GetPositionFromCoordinates(selectedNode.coordinates);
-            DisplayCanvas(upgradeCanvas);
-            savedDeploy.SetActive(true);
+            DisplayCanvas(upgradeUI);
+            //TODO: get turret under me for upgrade
+
+            //SetUITextsTower(savedDefence.GetComponent<Tower>());
+            //savedDefence.SetActive(true);
         }
 
         // Else will block path = show not allowed message
@@ -231,9 +250,12 @@ public class PlayerSelector : MonoBehaviour
     /// <param name="context"></param>
     public void OnDeploy(InputAction.CallbackContext context)
     {
+        CloseAllCanvas();
         // Open Deploy Menu
-        DisplayCanvas(deployCanvas);
+        DisplayCanvas(deployUI);
         savedDeploy.SetActive(true);
+        Enemy realPrefab = savedDeploy.GetComponent<DummySpawner>().realPrefab.GetComponent<Enemy>();
+        SetUITextsUnit(realPrefab);
     }
 
     /// <summary>
@@ -276,6 +298,7 @@ public class PlayerSelector : MonoBehaviour
         CloseAllCanvas();
         givenCanv.SetActive(true);
         menuOpen = givenCanv;
+        GetUITexts(givenCanv);
     }
 
     /// <summary>
@@ -283,14 +306,73 @@ public class PlayerSelector : MonoBehaviour
     /// </summary>
     public void CloseAllCanvas()
     {
-        buyCanvas.SetActive(false);
-        deployCanvas.SetActive(false);
-        upgradeCanvas.SetActive(false);
+        buyUI.SetActive(false);
+        deployUI.SetActive(false);
+        upgradeUI.SetActive(false);
+        savedDefence.SetActive(false);
+        savedDeploy.SetActive(false);
         menuOpen = null;
     }
     #endregion
     
     #region Defence
+    /// <summary>
+    /// Called by OnBuy from Menu. Attempt to buy tower and place on node.
+    /// </summary>
+    /// <param name="towerPrefab"></param>
+    public void BuyDefence(Tower towerPrefab)
+    {
+        /// <summary>
+        /// - Buy selected turret, if can afford and location is walkable and will not block path - Handled in select button
+        /// - subtract cost
+        /// - place turret and set space to not walkable
+        /// - Close all Canvas
+        /// </summary>
+
+        if(myBank == null){
+            return;
+        }
+        
+        bool isSuccessful = myBank.CreateTower(towerPrefab, gridManager.GetPositionFromCoordinates(selectedNode.coordinates));
+        if(isSuccessful == true)
+        {
+            GameObject newTower = Instantiate(towerPrefab.myPrefab, gridManager.GetPositionFromCoordinates(selectedNode.coordinates), Quaternion.identity);
+            newTower.GetComponent<Tower>().Activate();
+            gridManager.BlockNode(coordinates);
+            pathFinder.NotifiyReceivers();
+            GameObject myEffect = Instantiate(buyEffect, newTower.transform);
+        }
+        else
+        {
+            // TODO: spawn message here
+            Debug.Log("Unable to buy turret");
+        }
+    }
+    #endregion
+
+    #region Deploy Unit
+        private void BuyUnit(GameObject unitToDeploy)
+        {
+            GameObject realPrefab = unitToDeploy.GetComponent<DummySpawner>().realPrefab;
+            Enemy myEnemy = realPrefab.GetComponent<Enemy>();
+            if(myBank.CreateUnit(myEnemy) == true)
+            {
+                Lane otherLane = GetOtherLane();
+                otherLane.enemySpawner.DeployUnit(realPrefab, otherLane);
+                //savedDeploy.SetActive(false); // Stay active
+                //TODO: Make a Ding Noise, shake the money counter or show a negative floating value from money?
+                GameObject myEffect = Instantiate(deployEffect, transform);
+                //CloseAllCanvas();
+            }
+            else
+            {
+                // TODO: spawn message here
+                //SpawnMessage("Unable to buy unit");
+            }
+        }
+    #endregion
+
+    #region Utility
     /// <summary>
     /// Cycle next Game Object
     /// Given GameObject and isNext bool. isNext true = cycle right, else cycle left.
@@ -340,38 +422,6 @@ public class PlayerSelector : MonoBehaviour
     }
 
     /// <summary>
-    /// Called by OnBuy from Menu. Attempt to buy tower and place on node.
-    /// </summary>
-    /// <param name="towerPrefab"></param>
-    public void BuyDefence(Tower towerPrefab)
-    {
-        /// <summary>
-        /// - Buy selected turret, if can afford and location is walkable and will not block path - Handled in select button
-        /// - subtract cost
-        /// - place turret and set space to not walkable
-        /// - Close all Canvas
-        /// </summary>
-
-        if(myBank == null){
-            return;
-        }
-        
-        bool isSuccessful = myBank.CreateTower(towerPrefab, gridManager.GetPositionFromCoordinates(selectedNode.coordinates));
-        if(isSuccessful == true)
-        {
-            Instantiate(towerPrefab, gridManager.GetPositionFromCoordinates(selectedNode.coordinates), Quaternion.identity);
-            gridManager.BlockNode(coordinates);
-            pathFinder.NotifiyReceivers();
-        }
-        else
-        {
-            // TODO spawn message here
-            Debug.Log("Unable to buy turret");
-        }
-    }
-    #endregion
-
-    /// <summary>
     /// Return other lane. Called by DeployUnit.
     /// </summary>
     public Lane GetOtherLane()
@@ -382,4 +432,35 @@ public class PlayerSelector : MonoBehaviour
         }
         return myLane;
     }
+
+    /// <summary>
+    /// Get correct UI. Called by DisplayCanvas.
+    /// </summary>
+    private void GetUITexts(GameObject rootObject)
+    {
+        nameText = rootObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        typeText = rootObject.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+        costText = rootObject.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
+    }
+
+    /// <summary>
+    /// Set UI objects to new item. Called by .
+    /// </summary>
+    private void SetUITextsTower(Tower rootTower)
+    {
+        nameText.text = rootTower.myName;
+        typeText.text = rootTower.myType;
+        costText.text = rootTower.myCost.ToString();
+    }
+
+    /// <summary>
+    /// Set UI objects to new item. Called by .
+    /// </summary>
+    private void SetUITextsUnit(Enemy rootEnemy)
+    {
+        nameText.text = rootEnemy.myName;
+        typeText.text = rootEnemy.myType;
+        costText.text = rootEnemy.myCost.ToString();
+    }
+    #endregion
 }

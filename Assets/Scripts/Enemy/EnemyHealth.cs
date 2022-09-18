@@ -5,9 +5,10 @@ using UnityEngine;
 [RequireComponent(typeof(Enemy))]
 public class EnemyHealth : MonoBehaviour
 {
-    [SerializeField] int maxHitPoints = 5;
-    [Tooltip("Adds additional max health to enemy.")]
-    [SerializeField] int diffucltiyRamp = 1;
+    [Tooltip("Max health.")]
+    [SerializeField] public int maxHitPoints = 5;
+    
+    [Tooltip("Current health.")]
     [SerializeField] int currentHitPoints = 0;
 
     Enemy enemy;
@@ -24,20 +25,25 @@ public class EnemyHealth : MonoBehaviour
         currentHitPoints = maxHitPoints;
     }
     
+    /// <summary>
+    /// Instantiate new units within spawn area. Called by user when spawning new units.
+    /// </summary>
     void OnParticleCollision(GameObject other)
     {
-        ProcessHit();
+        ProcessHit(other);
         CoolDown();
     }
-    void ProcessHit()
+
+    void ProcessHit(GameObject other)
     {
+        //TODO: Other damage
+        //currentHitPoints - other.damage
         currentHitPoints--;
         
         //material.color.a = 0;
         if(currentHitPoints <= 0)
         {
-            gameObject.SetActive(false);
-            maxHitPoints += diffucltiyRamp;
+            Destroy(this.gameObject);
             enemy.RewardGold();
         }
     }

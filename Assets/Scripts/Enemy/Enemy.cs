@@ -4,13 +4,22 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    [SerializeField, Tooltip("This unit's name.")]
+    public string myName = "Hot Roller";
+
+    [SerializeField, Tooltip("This unity's Type.")]
+    public string myType = "Slow, low health";
+    [SerializeField] public int myCost = 5;
 
     [SerializeField] int goldReward = 25;
-    [SerializeField] public int goldCost = 5;
     [SerializeField] int lifeDamage = 1;
     [SerializeField] int incomeAdd = 1;
 
     public Bank myBank;
+
+    public GameObject myPrefab;
+
+    public bool canBeShot = false;
 
     public void RewardGold()
     {
@@ -33,5 +42,10 @@ public class Enemy : MonoBehaviour
         }
         // Spawn unit at the start of lane again
         //player.take(lifeDamage);
+    }
+
+    public void EnableBeingShot()
+    {
+        canBeShot = true;
     }
 }
